@@ -30,7 +30,7 @@ public class RoyalRoombaManager implements MqttSimpleCallback {
 			e.printStackTrace();
 		}		
 		
-		String[] stringArray = {"roomba1", "roomba2"};
+		String[] stringArray = {"toroomba1", "toroomba2"};
 		int[] numArray = {1,1};
 		
 		try{
@@ -79,6 +79,13 @@ public class RoyalRoombaManager implements MqttSimpleCallback {
 			}
 		}catch(Exception e){
 	
+		}
+	}
+	
+	public static void trackRoomba(String portname, int distance, int angle){
+		
+		if(distance != 0){
+			System.out.println(distance+" "+angle);
 		}
 	}
 }

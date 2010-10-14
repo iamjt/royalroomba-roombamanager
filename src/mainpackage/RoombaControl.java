@@ -161,7 +161,7 @@ public class RoombaControl {
 		
 		//Turns left
 		if(action.equals("TURN_LEFT")){
-			
+			velocity = 400;
 			radius = -turnConstant-Math.abs(velocity);
 			velocity *= 0.95;
 			
@@ -199,6 +199,12 @@ public class RoombaControl {
 			if(velocity<0){
 				roombaAction("ACCELERATE");
 			}
+		}
+		
+		if(action.equals("STRAIGHT")){
+			roombacomm.speed = 300;
+			roombacomm.goStraight(600);
+			roombacomm.speed = 0;
 		}
 		
 		//Rooomba command to move;

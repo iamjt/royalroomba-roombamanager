@@ -410,6 +410,8 @@ public class RoombaCommSerial extends RoombaComm implements SerialPortEventListe
                         		
                         		mainpackage.RoyalRoombaManager.publish(getPortname(), "WALL");
                         	}
+                        	
+                        	mainpackage.RoyalRoombaManager.trackRoomba(getPortname(), distance(), angle());
                             Thread.sleep( sensorsUpdateTime );
                         }
                     } catch(InterruptedException ex) {}
