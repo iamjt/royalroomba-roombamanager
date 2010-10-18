@@ -5,10 +5,11 @@ public class RoombaControl {
 	
 	public RoombaCommSerial roombacomm;
 	public String comPort;
-	public int velocity;
-	public int radius;
+	public String roombaKey;
 	public boolean left;
 	public boolean right;
+	public int velocity;
+	public int radius;
 	public int turnConstant;
 	public int leftFactor ;
 	public int rightFactor;
@@ -16,9 +17,8 @@ public class RoombaControl {
 	
 	public RoombaControl(String portNumber){
 		
-		//INstantiate variables
+		//Instantiate variables
 		comPort = portNumber;
-		roombacomm = new RoombaCommSerial(true);
 		velocity = 0;
 		radius = 0;
 		leftFactor = 0;
@@ -27,6 +27,11 @@ public class RoombaControl {
 		right = false;
 		speedCap = 400;
 		turnConstant = 100;
+		
+		/* Commented out to test
+		//Connect to roomba
+		roombacomm = new RoombaCommSerial(true);
+		roombacomm.controller = this;
 		
 		//print debug msg if cant connect
 		if( !roombacomm.connect( portNumber ) ) {
@@ -44,7 +49,9 @@ public class RoombaControl {
 		roombacomm.control();
 		roombacomm.pause(50);
 		roombacomm.reset();
+		*/
 		
+		roombaPublish("SPEED", "400");
 	}
 	
 	//Reset the roomba incase of wheelie
@@ -58,8 +65,6 @@ public class RoombaControl {
 	
 	//Function command the roomba
 	public void roombaAction(String action){
-		
-		System.out.println(action);
 		
 		//LIST OF COMMANDS
 		//----------------
@@ -218,7 +223,23 @@ public class RoombaControl {
 			roombacomm.speed = velocity;
 		}
 		
-		//publish roomba stats
-		RoyalRoombaManager.publish(comPort, "VELOCITY:"+velocity);
+		//publish roomba speed
+		roombaPublish("speed", ""+velocity);
+	}
+	
+	//Publish function to publish messages to server
+	public void roombaPublish(String type, String thismessage){
+		
+		//set routing key
+		String routingkey = "roomba-"+type;
+		
+		if(comPort.equals("COM40")){
+			routingkey +="-1";
+		}else{
+			routingkey +="-2";
+		}
+		
+		//publish
+		RoyalRoombaManager.publish(routingkey, thismessage);
 	}
 }

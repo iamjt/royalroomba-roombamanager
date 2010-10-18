@@ -1,5 +1,4 @@
 package mainpackage;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import com.rabbitmq.client.*;
@@ -13,6 +12,11 @@ public class RoyalRoombaManager{
 	public static final String ROUTING_KEY_2 = "roomba2";
 	public static final String SERVER_KEY = "server";
 	public static final int PORT = AMQP.PROTOCOL.PORT;
+	public static final ConnectionFactory FACTORY = new ConnectionFactory();;
+	public static final String PUBLISH_KEY_1 = "roomba-out-1";
+	public static final String PUBLISH_KEY_2 = "roomba-out-2";
+	public static Connection conn;
+	public static Channel channel;
 	
 	//Declare roombacomm variables. Variables are not
 	//set to constants in case we want to implement easy reconnection
@@ -22,18 +26,27 @@ public class RoyalRoombaManager{
 	public static String port1 = "COM40";
 	public static String port2 = "COM41";
 	
+	//Map variables used to track roombas
+	//initial values of x and y are tentative
+	public static final double PI = 3.1415;
+	public static double roomba1X = 100;
+	public static double roomba1Y = 100;
+	public static double roomba1Angle = 0;
+	public static double roomba2X = 400;
+	public static double roomba2Y = 400;
+	public static double roomba2Angle = 180;
+	
 	public static void main(String args[]){
-		
-		//Instantiate roombas
-		//Comment out if need to test
-		//roomba1 = new RoombaControl(port1);
-		//roomba2 = new RoombaControl(port2);		
 		
 		try {
 			//Set up RabbitMQ Connection
-			ConnectionFactory factory = new ConnectionFactory();
-			Connection conn = factory.newConnection(HOST);
-			Channel channel = conn.createChannel();
+			conn = FACTORY.newConnection(HOST);
+			channel = conn.createChannel();
+			
+			//Instantiate roombas
+			//Comment out if need to test
+			roomba1 = new RoombaControl(port1);
+			roomba2 = new RoombaControl(port2);
 			
 			//Declare exchange to be used and bind a queue
 			//And bind 2 routing keys (one for each roomba
@@ -56,13 +69,13 @@ public class RoyalRoombaManager{
 			//Infinite Loop to listen to deliveries
 			//from the rabbitmq server
 			//Loop can be terminated by changing loopTermination
-			boolean loopTermination = true;
+			boolean loopTermination = false;
 			
 			while (loopTermination) {
 			    QueueingConsumer.Delivery delivery;
 			    try {
 			        delivery = consumer.nextDelivery();
-				    channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);			    		
+			        channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);			    		
 				    System.out.println(delivery.getEnvelope().getRoutingKey()+" "+(new String(delivery.getBody())));
 				    
 				    //Check the routing key of each delivery's envelope and pass them
@@ -91,28 +104,58 @@ public class RoyalRoombaManager{
 		    ex.printStackTrace();
 		    System.exit(1);
 		}
-	}
-	
-	public static void publish(String portname,String thismessage){
 		
-		
+		trackRoomba("COM40", 30, 15);
 	}
 	
 	public static void trackRoomba(String portname, int distance, int angle){
-		try 
-		{ 
-		    String filename= "data.txt"; 
-		    boolean append = true; 
-		    FileWriter fw = new FileWriter(filename,append); 
-
-		    fw.write("add a line\n");//appends the string to the file 
-		    fw.close(); 
-		} 
-
-		catch(IOException ioe) 
-		{ 
-		    System.err.println("IOException: " + ioe.getMessage()); 
-		} 
+		
+		//instantiate offsets to calculate
+		double xOffset=0, yOffset=0;
+		
+		//Calculate the cartesian offsets from the angle
+		xOffset = Math.cos( -angle/360 *PI ) * distance;
+		yOffset = Math.cos( -angle/360 *PI ) * distance;
+		
+		//Add the offsets to the respective roomba coordinates
+		//and update the angle to the roomba angle
+		if(portname.equals("COM40")){
+			roomba1X += xOffset;
+			roomba1Y += yOffset;
+			roomba1Angle -= angle;
+		}else{
+			roomba1X += xOffset;
+			roomba1Y += yOffset;
+			roomba2Angle -= angle;
+		}
+		
+		//Calculate Relative position of the 2 roombas
+		double roomba1EnemyX = roomba2X-roomba1X;
+		double roomba1EnemyY = roomba2Y-roomba1Y;
+		double roomba2EnemyX = roomba1X-roomba2X;
+		double roomba2EnemyY = roomba1Y-roomba2Y;
+		
+		//publish the relative positions to the server
+		publish("roomba-enemy-1", roomba1EnemyX+","+roomba1EnemyY);
+		publish("roomba-enemy-2", roomba2EnemyX+","+roomba2EnemyY);
 	}
 	
+	//publish function to publish to the server
+	//SERVER KEYS
+	//X is 1 or 2
+	//roomba-enemy-X
+	//roomba-speed-X
+	//roomba-collide-X
+	//roomba-out-X
+	public static void publish(String key,String thismessage){
+		
+		try {
+			channel.basicPublish(EXCHANGE, key, null, thismessage.getBytes());
+		} catch (IOException e) {
+			System.out.println("error publishing!");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }
