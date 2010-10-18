@@ -28,13 +28,13 @@ public class RoombaControl {
 		speedCap = 400;
 		turnConstant = 100;
 		
-		/* Commented out to test
 		//Connect to roomba
 		roombacomm = new RoombaCommSerial(true);
 		roombacomm.controller = this;
 		
 		//print debug msg if cant connect
 		if( !roombacomm.connect( portNumber ) ) {
+			roombaPublish("startup", "ROOMBA_CONNECT_FAILED");
 			System.out.println("Couldn't connect to "+portNumber);
             System.exit(1);
         }
@@ -49,9 +49,8 @@ public class RoombaControl {
 		roombacomm.control();
 		roombacomm.pause(50);
 		roombacomm.reset();
-		*/
 		
-		roombaPublish("SPEED", "400");
+		roombaPublish("startup", "ROOMBA_CONNECT_OK");
 	}
 	
 	//Reset the roomba incase of wheelie
