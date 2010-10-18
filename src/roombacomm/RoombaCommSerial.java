@@ -30,6 +30,8 @@ import gnu.io.*;
 import java.io.*;
 import java.util.*;
 
+import mainpackage.RoombaControl;
+
 
 /**
  *  The serial-port based implementation of RoombaComm.
@@ -56,7 +58,7 @@ public class RoombaCommSerial extends RoombaComm implements SerialPortEventListe
     static final int parity   = SerialPort.PARITY_NONE;
     static final int stopbits = SerialPort.STOPBITS_1;
     private String protocol = "SCI";
-
+    public RoombaControl controller;
     /**
      * contains a list of all the ports
      * keys are port names (e.g. "/dev/usbserial1")
@@ -398,17 +400,17 @@ public class RoombaCommSerial extends RoombaComm implements SerialPortEventListe
                             if(bump()){
                             	
                             	if(bumpLeft()){
-                            		mainpackage.RoyalRoombaManager.publish(getPortname(), "BUMP_RIGHT");
+                            		controller.roombaPublish("collide", "BUMP_RIGHT");
                             	}
                             	
                             	if(bumpRight()){
-                            		mainpackage.RoyalRoombaManager.publish(getPortname(), "BUMP_LEFT");
+                            		controller.roombaPublish("collide", "BUMP_LEFT");
                             	}
                             }
                             
                         	if(virtual_wall()==1){
                         		
-                        		mainpackage.RoyalRoombaManager.publish(getPortname(), "WALL");
+                        		controller.roombaPublish("out", "WALL");
                         	}
                         	
                         	mainpackage.RoyalRoombaManager.trackRoomba(getPortname(), distance(), angle());
