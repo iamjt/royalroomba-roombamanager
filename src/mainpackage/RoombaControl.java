@@ -59,6 +59,8 @@ public class RoombaControl {
 	//Function command the roomba
 	public void roombaAction(String action){
 		
+		System.out.println(action);
+		
 		//LIST OF COMMANDS
 		//----------------
 		//DISCONNECT
