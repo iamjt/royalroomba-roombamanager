@@ -7,7 +7,7 @@ import com.rabbitmq.client.*;
 public class RoyalRoombaManager{
 	
 	//Declare constant variables for RabbitMQ server
-	public static final String HOST = "169.254.208.130";
+	public static final String HOST = "www.vorce.net";
 	public static final String EXCHANGE = "amq.topic";
 	public static final String ROUTING_KEY_1 = "roomba1";
 	public static final String ROUTING_KEY_2 = "roomba2";

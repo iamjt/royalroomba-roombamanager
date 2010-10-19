@@ -388,6 +388,8 @@ public class RoombaCommSerial extends RoombaComm implements SerialPortEventListe
 		return portname;
 	}
 	
+  private long startbumptime = 0;
+
     public void startAutoUpdate() {
     	new Thread( new Runnable() {
                 public void run() {
@@ -398,7 +400,9 @@ public class RoombaCommSerial extends RoombaComm implements SerialPortEventListe
                             }
                             
                             if(bump()){
-                            	
+                            	if (startbumptime == 0) {
+                                startbumptime = System.currentTimeMillis();
+                              }
                             	if(bumpLeft()){
                             		controller.roombaPublish("collide", "BUMP_RIGHT");
                             	}
@@ -406,6 +410,10 @@ public class RoombaCommSerial extends RoombaComm implements SerialPortEventListe
                             	if(bumpRight()){
                             		controller.roombaPublish("collide", "BUMP_LEFT");
                             	}
+                            } else if (startbumptime != 0) {
+                              controller.roombaPublish("collide", "BUMP_END:" +
+                                Long.toString(System.currentTimeMillis() - startbumptime));
+                              startbumptime = 0;
                             }
                             
                         	if(virtual_wall()==1){
