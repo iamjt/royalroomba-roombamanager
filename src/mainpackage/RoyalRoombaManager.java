@@ -7,13 +7,13 @@ import com.rabbitmq.client.*;
 public class RoyalRoombaManager{
 	
 	//Declare constant variables for RabbitMQ server
-	public static final String HOST = "www.vorce.net";
+	public static final String HOST = "169.254.208.130";
 	public static final String EXCHANGE = "amq.topic";
 	public static final String ROUTING_KEY_1 = "roomba1";
 	public static final String ROUTING_KEY_2 = "roomba2";
 	public static final String SERVER_KEY = "server";
 	public static final int PORT = AMQP.PROTOCOL.PORT;
-	public static final ConnectionFactory FACTORY = new ConnectionFactory();;
+	public static final ConnectionFactory FACTORY = new ConnectionFactory();
 	public static final String PUBLISH_KEY_1 = "roomba-out-1";
 	public static final String PUBLISH_KEY_2 = "roomba-out-2";
 	public static Connection conn;
@@ -24,30 +24,31 @@ public class RoyalRoombaManager{
 	//for DCs
 	public static RoombaControl roomba1;
 	public static RoombaControl roomba2;
-	public static String port1 = "COM40";
-	public static String port2 = "COM41";
+	public static String port1 = "COM20";
+	public static String port2 = "COM21";
 	
 	//Map variables used to track roombas
 	//initial values of x and y are tentative
 	public static final double PI = 3.1415;
-	public static double roomba1X = 100;
-	public static double roomba1Y = 100;
-	public static double roomba1Angle = 180;
-	public static double roomba2X = 400;
-	public static double roomba2Y = 400;
-	public static double roomba2Angle = 0;
+	public static double roomba1X = -200;
+	public static double roomba1Y = 0;
+	public static double roomba1Angle = 0;
+	public static double roomba2X = 200;
+	public static double roomba2Y = 0;
+	public static double roomba2Angle = 180;
 	
 	public static void main(String args[]){
-		
 		try {
 			//Set up RabbitMQ Connection
+			System.out.println("Connecting to Server...");
 			conn = FACTORY.newConnection(HOST);
 			channel = conn.createChannel();
 			
 			//Instantiate roombas
 			//Comment out if need to test
+			System.out.println("Connecting to Roomba...");
 			roomba1 = new RoombaControl(port1);
-			roomba2 = new RoombaControl(port2);
+			//roomba2 = new RoombaControl(port2);
 			
 			//Declare exchange to be used and bind a queue
 			//And bind 2 routing keys (one for each roomba

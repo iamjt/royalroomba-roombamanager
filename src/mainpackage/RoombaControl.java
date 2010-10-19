@@ -180,7 +180,7 @@ public class RoombaControl {
 		
 		//turns right
 		if(action.equals("TURN_RIGHT")){
-			
+			velocity = 400;
 			radius = turnConstant+Math.abs(velocity);
 			velocity *= 0.95;
 			right = true;
