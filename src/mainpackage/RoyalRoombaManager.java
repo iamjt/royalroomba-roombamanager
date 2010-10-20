@@ -13,7 +13,7 @@ public class RoyalRoombaManager{
 	public static final String ROUTING_KEY_2 = "roomba2";
 	public static final String SERVER_KEY = "server";
 	public static final int PORT = AMQP.PROTOCOL.PORT;
-	public static final ConnectionFactory FACTORY = new ConnectionFactory();;
+	public static final ConnectionFactory FACTORY = new ConnectionFactory();
 	public static final String PUBLISH_KEY_1 = "roomba-out-1";
 	public static final String PUBLISH_KEY_2 = "roomba-out-2";
 	public static Connection conn;
@@ -24,8 +24,8 @@ public class RoyalRoombaManager{
 	//for DCs
 	public static RoombaControl roomba1;
 	public static RoombaControl roomba2;
-	public static String port1 = "COM40";
-	public static String port2 = "COM41";
+	public static String port1 = "COM20";
+	public static String port2 = "COM21";
 	
 	//Map variables used to track roombas
 	//initial values of x and y are tentative
@@ -38,14 +38,15 @@ public class RoyalRoombaManager{
 	public static double roomba2Angle = 180;
 	
 	public static void main(String args[]){
-		
 		try {
 			//Set up RabbitMQ Connection
+			System.out.println("Connecting to Server...");
 			conn = FACTORY.newConnection(HOST);
 			channel = conn.createChannel();
 			
 			//Instantiate roombas
 			//Comment out if need to test
+			System.out.println("Connecting to Roomba...");
 			roomba1 = new RoombaControl(port1);
 			//roomba2 = new RoombaControl(port2);
 			
