@@ -21,12 +21,12 @@ public class RoombaControl {
 		comPort = portNumber;
 		velocity = 0;
 		radius = 0;
-		leftFactor = 0;
-		rightFactor = 0;
+		leftFactor = -450;
+		rightFactor = 450;
 		left = false;
 		right = false;
-		speedCap = 400;
-		turnConstant = 100;
+		
+		speedCap = 500;
 		
 		//Connect to roomba
 		roombacomm = new RoombaCommSerial(true);
@@ -167,32 +167,37 @@ public class RoombaControl {
 		
 		//Turns left
 		if(action.equals("TURN_LEFT")){
-			velocity = 400;
-			radius = -turnConstant-Math.abs(velocity);
-			velocity *= 0.99;
 			
-			left = true;
-			//leftFactor += 5;
-		}/*else{
+			if(left){
+				leftFactor +=2;
+			}else{
+				left = true;
+				leftFactor = -450;
+			}
+			
+			radius = leftFactor;			
+		}else{
 			left = false;
-			leftFactor = 0;
-		}*/
+		}
 		
 		//turns right
 		if(action.equals("TURN_RIGHT")){
-			velocity = 400;
-			radius = turnConstant+Math.abs(velocity);
-			velocity *= 0.99;
-			right = true;
-			//rightFactor += 5;
-		}/*else{
+			
+			if(right){
+				rightFactor -=2;
+			}else{
+				right = true;
+				rightFactor = 450;
+			}
+			
+			radius = rightFactor;			
+		}else{
 			right = false;
-			rightFactor = 0;
-		}*/
+		}
 		
 		//Slows down the roomba
 		if(action.equals("SLOW_DOWN")){
-			
+			System.out.println("Slow down received");
 			if(velocity < 10){
 				
 				velocity = 0;

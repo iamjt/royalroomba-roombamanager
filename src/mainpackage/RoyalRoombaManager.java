@@ -7,7 +7,7 @@ import com.rabbitmq.client.*;
 public class RoyalRoombaManager{
 	
 	//Declare constant variables for RabbitMQ server
-	public static final String HOST = "www.vorce.net";
+	public static final String HOST = "192.168.2.100";
 	public static final String EXCHANGE = "amq.topic";
 	public static final String ROUTING_KEY_1 = "roomba1";
 	public static final String ROUTING_KEY_2 = "roomba2";
@@ -24,8 +24,8 @@ public class RoyalRoombaManager{
 	//for DCs
 	public static RoombaControl roomba1;
 	public static RoombaControl roomba2;
-	public static String port1 = "COM20";
-	public static String port2 = "COM21";
+	public static String port1 = "COM40";
+	public static String port2 = "COM41";
 	
 	//Map variables used to track roombas
 	//initial values of x and y are tentative
@@ -48,7 +48,7 @@ public class RoyalRoombaManager{
 			//Comment out if need to test
 			System.out.println("Connecting to Roomba...");
 			roomba1 = new RoombaControl(port1);
-			//roomba2 = new RoombaControl(port2);
+			roomba2 = new RoombaControl(port2);
 			
 			//Declare exchange to be used and bind a queue
 			//And bind 2 routing keys (one for each roomba
