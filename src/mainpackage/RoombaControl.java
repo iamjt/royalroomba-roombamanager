@@ -25,7 +25,7 @@ public class RoombaControl {
 		rightFactor = 0;
 		left = false;
 		right = false;
-		speedCap = 400;
+		speedCap = 500;
 		turnConstant = 100;
 		
 		//Connect to roomba
@@ -49,6 +49,7 @@ public class RoombaControl {
 		roombacomm.control();
 		roombacomm.pause(50);
 		roombacomm.reset();
+		roombacomm.speed = 0;
 		
 		roombaPublish("startup", "ROOMBA_CONNECT_OK");
 	}
@@ -103,7 +104,7 @@ public class RoombaControl {
 			
 			//forward velocity caps at speed cap
 			if(velocity < speedCap){
-				velocity += 11;
+				velocity += 1;
 				
 				if((0.2*velocity) < 0 ){
 					velocity -= (int)(0.2*velocity);
@@ -119,12 +120,12 @@ public class RoombaControl {
 		if(action.equals("DECELERATE")){
 			
 			if(velocity > -speedCap){
-				velocity -= 11;
+				velocity -= 1;
 				
-				if((0.2*velocity) > 0 ){
-					velocity -= (int)(0.2*velocity);
+				if((0.05*velocity) > 0 ){
+					velocity -= (int)(0.05*velocity);
 				}else{
-					velocity += (int)(0.2*velocity);
+					velocity += (int)(0.05*velocity);
 				}
 			}
 		}
@@ -167,12 +168,12 @@ public class RoombaControl {
 		
 		//Turns left
 		if(action.equals("TURN_LEFT")){
-			velocity = 400;
+			
 			radius = -turnConstant-Math.abs(velocity);
-			velocity *= 0.95;
+			velocity *= 0.99;
 			
 			left = true;
-			leftFactor += 5;
+			//leftFactor += 5;
 		}/*else{
 			left = false;
 			leftFactor = 0;
@@ -182,9 +183,9 @@ public class RoombaControl {
 		if(action.equals("TURN_RIGHT")){
 			
 			radius = turnConstant+Math.abs(velocity);
-			velocity *= 0.95;
+			velocity *= 0.99;
 			right = true;
-			rightFactor += 5;
+			//rightFactor += 5;
 		}/*else{
 			right = false;
 			rightFactor = 0;

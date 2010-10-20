@@ -30,12 +30,12 @@ public class RoyalRoombaManager{
 	//Map variables used to track roombas
 	//initial values of x and y are tentative
 	public static final double PI = 3.1415;
-	public static double roomba1X = 100;
-	public static double roomba1Y = 100;
-	public static double roomba1Angle = 180;
-	public static double roomba2X = 400;
-	public static double roomba2Y = 400;
-	public static double roomba2Angle = 0;
+	public static double roomba1X = -200;
+	public static double roomba1Y = 0;
+	public static double roomba1Angle = 0;
+	public static double roomba2X = 200;
+	public static double roomba2Y = 0;
+	public static double roomba2Angle = 180;
 	
 	public static void main(String args[]){
 		
@@ -47,7 +47,7 @@ public class RoyalRoombaManager{
 			//Instantiate roombas
 			//Comment out if need to test
 			roomba1 = new RoombaControl(port1);
-			roomba2 = new RoombaControl(port2);
+			//roomba2 = new RoombaControl(port2);
 			
 			//Declare exchange to be used and bind a queue
 			//And bind 2 routing keys (one for each roomba
@@ -79,7 +79,7 @@ public class RoyalRoombaManager{
 			        channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);			    		
 				    
 			        //Debug Statement for the message consumed
-			        System.out.println(delivery.getEnvelope().getRoutingKey()+" "+(new String(delivery.getBody())));
+			        //System.out.println(delivery.getEnvelope().getRoutingKey()+" "+(new String(delivery.getBody())));
 				    
 				    //Check the routing key of each delivery's envelope and pass them
 				    //To the respective roombas for actions
@@ -113,7 +113,7 @@ public class RoyalRoombaManager{
 	
 	public static void trackRoomba(String portname, int distance, int angle){
 		
-		if((distance!=0)&&(angle!=0)){
+		if(!((distance==0)&&(angle==0))){
 			//instantiate offsets to calculate
 			double xOffset=0, yOffset=0, currentAngle;
 			

@@ -396,9 +396,9 @@ public class RoombaCommSerial extends RoombaComm implements SerialPortEventListe
                             if( connected() ){
                             	sensors();
                             }
-                            
+
                             if(bump()){
-                            	
+                            	System.out.print("updating bump");
                             	if(bumpLeft()){
                             		controller.roombaPublish("collide", "BUMP_RIGHT");
                             	}
