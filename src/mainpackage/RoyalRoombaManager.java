@@ -24,8 +24,8 @@ public class RoyalRoombaManager{
 	//for DCs
 	public static RoombaControl roomba1;
 	public static RoombaControl roomba2;
-	public static String port1 = "COM40";
-	public static String port2 = "COM41";
+	public static String port1 = "COM41";
+	public static String port2 = "COM40";
 	
 	//Map variables used to track roombas
 	//initial values of x and y are tentative
@@ -81,7 +81,7 @@ public class RoyalRoombaManager{
 				    
 			        //Debug Statement for the message consumed
 			        //System.out.println(delivery.getEnvelope().getRoutingKey()+" "+(new String(delivery.getBody())));
-				    
+			        
 				    //Check the routing key of each delivery's envelope and pass them
 				    //To the respective roombas for actions
 				    //Check RoombaControl.java for the list of commands
@@ -95,6 +95,8 @@ public class RoyalRoombaManager{
 				    	//Terminate the consumption loop
 				    	if(delivery.getBody().equals("STOP_CONSUME")){
 				    		loopTermination = false;
+				    	}else if(delivery.getBody().equals("RESETBA")){
+				    		initVariables();
 				    	}
 				    }
 			
@@ -109,7 +111,112 @@ public class RoyalRoombaManager{
 		    System.exit(1);
 		}
 		
-		trackRoomba("COM40", 30, 15);
+		//trackRoomba("COM40", 30, 15);
+	}
+	
+	public static void initVariables(){
+		
+		roomba1X = -200;
+		roomba1Y = 0;
+		roomba1Angle = 0;
+		roomba2X = 200;
+		roomba2Y = 0;
+		roomba2Angle = 180;
+		trackRoomba(port1, 1, 1);
+		trackRoomba(port1, -1, -1);
+		trackRoomba(port2, 1, 1);
+		trackRoomba(port2, -1, -1);
+	}
+	
+	//Reset the positions when collision happens
+	//to the most accurate possible values
+	public static void bumpReset(String portname){
+		if(portname != null){
+			//init default direction
+			int direction = 0;
+			
+			double roombaEnemyX;
+			double roombaEnemyY;
+			
+			//determine enemy roomba position
+			if(portname.equals(port1)){
+				
+				//get 1's enemy current position
+				roombaEnemyX = roomba2X-roomba1X;
+				roombaEnemyY = roomba2Y-roomba1Y;
+				
+			}else{
+				
+				//get 2's enemy current position
+				roombaEnemyX = roomba1X-roomba2X;
+				roombaEnemyY = roomba1Y-roomba2Y;
+			}
+			
+			//+x +y
+			if((roombaEnemyX>=0)&&(roombaEnemyY>=0)){
+				
+				direction = 1;
+			
+			//-x +y
+			}else if((roombaEnemyX<0)&&(roombaEnemyY>=0)){
+				
+				direction = 2;
+			
+			//-x -y
+			}else if((roombaEnemyX<0)&&(roombaEnemyY<0)){
+				
+				direction = 3;
+			
+			//+x -y
+			}else if((roombaEnemyX>=0)&&(roombaEnemyY<0)){
+	
+				direction = 4;
+			}
+			
+			//set the possible accurate position
+			switch(direction){
+						
+				case 0:
+					
+					roombaEnemyX = 200;
+					roombaEnemyY = 0;
+					
+				case 1:
+					
+					roombaEnemyX = 142;
+					roombaEnemyY = 142;
+					break;
+				case 2:
+					
+					roombaEnemyX = -142;
+					roombaEnemyY = 142;
+					break;
+					
+				case 3:
+					
+					roombaEnemyX = -142;
+					roombaEnemyY = -142;
+					break;
+			
+				case 4:
+					
+					roombaEnemyX = 142;
+					roombaEnemyY = -142;			
+			}
+			
+			if(portname.equals(port1)){
+				
+				//set current enemy position for roomba1 (roomba 2's position)
+				roomba2X = roombaEnemyX;
+				roomba2Y = roombaEnemyY;
+				
+			}else{
+				
+				//set current enemy position for roomba2 (roomba 1's position)
+				roomba1X = roombaEnemyX;
+				roomba1Y = roombaEnemyY;
+			}
+		}
 	}
 	
 	public static void trackRoomba(String portname, int distance, int angle){
@@ -118,10 +225,16 @@ public class RoyalRoombaManager{
 			//instantiate offsets to calculate
 			double xOffset=0, yOffset=0, currentAngle;
 			
-			if(portname.equals("COM40")){
+			if(portname.equals(port1)){
 				currentAngle = roomba1Angle + angle;
 			}else{
 				currentAngle = roomba2Angle + angle;
+			}
+			
+			if(currentAngle < 0){
+				currentAngle = 360 - currentAngle;
+			}else if(currentAngle > 360){
+				currentAngle -= 360;
 			}
 			
 			//Calculate the cartesian offsets from the angle
@@ -135,7 +248,8 @@ public class RoyalRoombaManager{
 			
 			//Add the offsets to the respective roomba coordinates
 			//and update the angle to the roomba angle
-			if(portname.equals("COM40")){
+			//System.out.println(portname+" "+port1+" "+portname.equals(port1));
+			if(portname.equals(port1)){
 				roomba1X += xOffset;
 				roomba1Y += yOffset;
 				roomba1Angle = currentAngle;
@@ -182,7 +296,6 @@ public class RoyalRoombaManager{
 	//roomba-collide-X
 	//roomba-out-X
 	public static void publish(String key,String thismessage){
-		
 		try {
 			channel.basicPublish(EXCHANGE, key, null, thismessage.getBytes());
 		} catch (IOException e) {

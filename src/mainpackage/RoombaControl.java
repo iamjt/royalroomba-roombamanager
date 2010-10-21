@@ -14,6 +14,7 @@ public class RoombaControl {
 	public int leftFactor ;
 	public int rightFactor;
 	public int speedCap;
+	public int prevSpeed;
 	
 	public RoombaControl(String portNumber){
 		
@@ -25,7 +26,7 @@ public class RoombaControl {
 		rightFactor = 450;
 		left = false;
 		right = false;
-		
+		prevSpeed = 0;
 		speedCap = 500;
 		
 		//Connect to roomba
@@ -197,17 +198,19 @@ public class RoombaControl {
 		
 		//Slows down the roomba
 		if(action.equals("SLOW_DOWN")){
-			System.out.println("Slow down received");
-			if(velocity < 10){
+			if(Math.abs(velocity) < 10){
 				
 				velocity = 0;
 			}
 			
 			if(velocity>0){
+				
+				velocity -=2;
 				roombaAction("DECELERATE");
 			}
 			
 			if(velocity<0){
+				velocity +=2;
 				roombaAction("ACCELERATE");
 			}
 		}
@@ -218,17 +221,38 @@ public class RoombaControl {
 			roombacomm.speed = 0;
 		}
 		
-		//Rooomba command to move;
-		if(!action.equals("SPIN")){
-			roombacomm.drive(-velocity, radius);
-		}else{
-			roombacomm.speed = 500;
-			roombacomm.spinRight(180);
-			roombacomm.speed = velocity;
+		if(velocity < -500){
+			velocity = -500;
 		}
 		
-		//publish roomba speed
-		roombaPublish("speed", ""+velocity);
+		if(velocity > 500){
+			velocity = 500;
+		}
+		
+		
+		//Rooomba command to move;
+		if(!action.contains("SPIN")){
+			roombacomm.drive(-velocity, radius);
+		}else{
+			
+			if(action.equals("SPIN")){
+				
+				roombacomm.speed = 500;
+				roombacomm.spinRight(180);
+				roombacomm.speed = velocity;
+				
+			}else{
+				
+				velocity = 0;				
+			}
+		}
+		
+		if(velocity != prevSpeed){
+			//publish roomba speed
+			roombaPublish("speed", Integer.toString(velocity));
+		}
+		
+		prevSpeed = velocity;
 	}
 	
 	//Publish function to publish messages to server

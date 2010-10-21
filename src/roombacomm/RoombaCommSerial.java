@@ -31,6 +31,7 @@ import java.io.*;
 import java.util.*;
 
 import mainpackage.RoombaControl;
+import mainpackage.RoyalRoombaManager;
 
 
 /**
@@ -400,9 +401,13 @@ public class RoombaCommSerial extends RoombaComm implements SerialPortEventListe
                             }
 
                             if(bump()){
+                            	
+                            	RoyalRoombaManager.bumpReset(controller.comPort);
+                            	
                             	if (startbumptime == 0) {
-                                startbumptime = System.currentTimeMillis();
-                              }
+                            		startbumptime = System.currentTimeMillis();
+                            	}
+                            	
                             	if(bumpLeft()){
                             		controller.roombaPublish("collide", "BUMP_RIGHT");
                             	}
@@ -421,7 +426,10 @@ public class RoombaCommSerial extends RoombaComm implements SerialPortEventListe
                         		controller.roombaPublish("out", "WALL");
                         	}
                         	
-                        	mainpackage.RoyalRoombaManager.trackRoomba(getPortname(), distance(), angle());
+                        	if(controller != null){
+                        		mainpackage.RoyalRoombaManager.trackRoomba(controller.comPort, distance(), angle());
+                        	}
+                        	
                             Thread.sleep( sensorsUpdateTime );
                         }
                     } catch(InterruptedException ex) {}

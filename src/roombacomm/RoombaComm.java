@@ -568,7 +568,6 @@ public abstract class RoombaComm
 
     /**
      * Move the Roomba via the low-level velocity + radius method.
-     * See the 'Drive' section of the Roomba ROI spec for more details.
      * Low-level command.
      * @param velocity  speed in millimeters/second, 
      *                  positive forward, negative backward
