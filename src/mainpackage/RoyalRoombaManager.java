@@ -169,8 +169,8 @@ public class RoyalRoombaManager{
 			double roomba2EnemyY = roomba1Y-roomba2Y;
 			
 			//publish the relative positions to the server
-			publish("roomba-enemy-1", roomba1EnemyX+","+roomba1EnemyY);
-			publish("roomba-enemy-2", roomba2EnemyX+","+roomba2EnemyY);
+			publish("roomba-enemy-1", roomba1EnemyX+","+roomba1EnemyY+","+roomba1Angle);
+			publish("roomba-enemy-2", roomba2EnemyX+","+roomba2EnemyY+","+roomba2Angle);
 		}
 	}
 	
