@@ -261,7 +261,7 @@ public class RoombaControl {
 		//set routing key
 		String routingkey = "roomba-"+type;
 		
-		if(comPort.equals("COM40")){
+		if(comPort.equals(RoyalRoombaManager.port1)){
 			routingkey +="-1";
 		}else{
 			routingkey +="-2";

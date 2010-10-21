@@ -7,7 +7,7 @@ import com.rabbitmq.client.*;
 public class RoyalRoombaManager{
 	
 	//Declare constant variables for RabbitMQ server
-	public static final String HOST = "192.168.2.100";
+	public static final String HOST = "192.168.1.101";
 	public static final String EXCHANGE = "amq.topic";
 	public static final String ROUTING_KEY_1 = "roomba1";
 	public static final String ROUTING_KEY_2 = "roomba2";
@@ -32,10 +32,10 @@ public class RoyalRoombaManager{
 	public static final double PI = 3.1415;
 	public static double roomba1X = -200;
 	public static double roomba1Y = 0;
-	public static double roomba1Angle = 0;
+	public static double roomba1Angle = -90;
 	public static double roomba2X = 200;
 	public static double roomba2Y = 0;
-	public static double roomba2Angle = 180;
+	public static double roomba2Angle = 90;
 	
 	public static void main(String args[]){
 		try {
@@ -118,14 +118,21 @@ public class RoyalRoombaManager{
 		
 		roomba1X = -200;
 		roomba1Y = 0;
-		roomba1Angle = 0;
+		roomba1Angle = -90;
 		roomba2X = 200;
 		roomba2Y = 0;
-		roomba2Angle = 180;
-		trackRoomba(port1, 1, 1);
-		trackRoomba(port1, -1, -1);
-		trackRoomba(port2, 1, 1);
-		trackRoomba(port2, -1, -1);
+		roomba2Angle = 90;
+		
+		if((roomba1 != null)&&(roomba2 != null)){
+			roomba1.resetRoomba();
+			roomba2.resetRoomba();
+			roomba1.velocity = 0;
+			roomba2.velocity = 0;
+			trackRoomba(port1, 1, 1);
+			trackRoomba(port1, -1, -1);
+			trackRoomba(port2, 1, 1);
+			trackRoomba(port2, -1, -1);
+		}
 	}
 	
 	//Reset the positions when collision happens
