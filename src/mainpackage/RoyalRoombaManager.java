@@ -7,12 +7,12 @@ import com.rabbitmq.client.*;
 public class RoyalRoombaManager{
 	
 	//Declare constant variables for RabbitMQ server
-	public static final String HOST = "192.168.1.101";
+	public static final String HOST = "192.168.43.24";//"192.168.2.100";//"171.18.183.208";//
 	public static final String EXCHANGE = "amq.topic";
 	public static final String ROUTING_KEY_1 = "roomba1";
 	public static final String ROUTING_KEY_2 = "roomba2";
 	public static final String SERVER_KEY = "server";
-	public static final int PORT = AMQP.PROTOCOL.PORT;
+	public static final int PORT = 80;//AMQP.PROTOCOL.PORT; //9000;//
 	public static final ConnectionFactory FACTORY = new ConnectionFactory();
 	public static final String PUBLISH_KEY_1 = "roomba-out-1";
 	public static final String PUBLISH_KEY_2 = "roomba-out-2";
@@ -24,8 +24,8 @@ public class RoyalRoombaManager{
 	//for DCs
 	public static RoombaControl roomba1;
 	public static RoombaControl roomba2;
-	public static String port1 = "COM41";
-	public static String port2 = "COM40";
+	public static String port1 = "COM40";
+	public static String port2 = "COM41";
 	
 	//Map variables used to track roombas
 	//initial values of x and y are tentative
@@ -38,10 +38,18 @@ public class RoyalRoombaManager{
 	public static double roomba2Angle = 90;
 	
 	public static void main(String args[]){
+		System.out.println("STARTING ROYAL ROOMBA MANAGER");
 		try {
+			System.out.println("CONNECTING TO SERVER....");
 			//Set up RabbitMQ Connection
-			System.out.println("Connecting to Server...");
-			conn = FACTORY.newConnection(HOST);
+			FACTORY.setUsername("guest");
+			FACTORY.setPassword("guest");
+			FACTORY.setVirtualHost("/");
+			FACTORY.setHost(HOST);
+			FACTORY.setPort(PORT);
+			System.out.println("CREATING CONNECTION");
+			Connection conn = FACTORY.newConnection();
+			System.out.println("CONNECTION CREATED, CREATING CHANNEL");
 			channel = conn.createChannel();
 			
 			//Instantiate roombas
@@ -95,7 +103,8 @@ public class RoyalRoombaManager{
 				    	//Terminate the consumption loop
 				    	if(delivery.getBody().equals("STOP_CONSUME")){
 				    		loopTermination = false;
-				    	}else if(delivery.getBody().equals("RESETBA")){
+				    	}else if(delivery.getBody().equals("RESETVAR")){
+				    		System.out.println("resetting!");
 				    		initVariables();
 				    	}
 				    }
@@ -128,11 +137,12 @@ public class RoyalRoombaManager{
 			roomba2.resetRoomba();
 			roomba1.velocity = 0;
 			roomba2.velocity = 0;
-			trackRoomba(port1, 1, 1);
-			trackRoomba(port1, -1, -1);
-			trackRoomba(port2, 1, 1);
-			trackRoomba(port2, -1, -1);
 		}
+		
+		trackRoomba(port1, 1, 1);
+		trackRoomba(port1, -1, -1);
+		trackRoomba(port2, 1, 1);
+		trackRoomba(port2, -1, -1);
 	}
 	
 	//Reset the positions when collision happens
@@ -303,6 +313,7 @@ public class RoyalRoombaManager{
 	//roomba-collide-X
 	//roomba-out-X
 	public static void publish(String key,String thismessage){
+		
 		try {
 			channel.basicPublish(EXCHANGE, key, null, thismessage.getBytes());
 		} catch (IOException e) {

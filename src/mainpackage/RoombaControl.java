@@ -103,13 +103,13 @@ public class RoombaControl {
 		if(action.equals("ACCELERATE")){
 			
 			//forward velocity caps at speed cap
-			if(velocity < speedCap){
+			if(velocity <= speedCap){
 				velocity += 11;
 				
-				if((0.2*velocity) < 0 ){
-					velocity -= (int)(0.2*velocity);
+				if((0.05*velocity) <= 0 ){
+					velocity -= (int)(0.05*velocity);
 				}else{
-					velocity += (int)(0.2*velocity);
+					velocity += (int)(0.05*velocity);
 				}
 			}
 		}
@@ -119,13 +119,13 @@ public class RoombaControl {
 		//roomba can move backwards
 		if(action.equals("DECELERATE")){
 			
-			if(velocity > -speedCap){
+			if(velocity >= -speedCap){
 				velocity -= 11;
 				
-				if((0.2*velocity) > 0 ){
-					velocity -= (int)(0.2*velocity);
+				if((0.05*velocity) >= 0 ){
+					velocity -= (int)(0.05*velocity);
 				}else{
-					velocity += (int)(0.2*velocity);
+					velocity += (int)(0.05*velocity);
 				}
 			}
 		}
@@ -136,7 +136,7 @@ public class RoombaControl {
 		if(action.equals("BOOST")){
 			
 			//forward velocity caps at 400mm/s
-			if(velocity < speedCap){
+			if(velocity <= speedCap){
 				velocity +=11;
 				velocity += (int)(0.3*velocity);
 			}
@@ -198,13 +198,13 @@ public class RoombaControl {
 		
 		//Slows down the roomba
 		if(action.equals("SLOW_DOWN")){
-			if(Math.abs(velocity) < 10){
+			
+			if(Math.abs(velocity) <= 10){
 				
 				velocity = 0;
 			}
 			
 			if(velocity>0){
-				
 				velocity -=2;
 				roombaAction("DECELERATE");
 			}

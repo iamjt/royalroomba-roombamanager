@@ -427,7 +427,7 @@ public class RoombaCommSerial extends RoombaComm implements SerialPortEventListe
                         	}
                         	
                         	if(controller != null){
-                        		mainpackage.RoyalRoombaManager.trackRoomba(controller.comPort, distance(), angle());
+                        		mainpackage.RoyalRoombaManager.trackRoomba(controller.comPort, -distance(), angle());
                         	}
                         	
                             Thread.sleep( sensorsUpdateTime );
