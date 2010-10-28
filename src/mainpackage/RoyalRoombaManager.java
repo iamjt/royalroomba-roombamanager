@@ -148,6 +148,8 @@ public class RoyalRoombaManager{
 			roomba2.resetRoomba();
 			roomba1.velocity = 0;
 			roomba2.velocity = 0;
+			roomba1.roombaPublish("speed", Integer.toString(roomba1.velocity));
+			roomba2.roombaPublish("speed", Integer.toString(roomba2.velocity));
 		}
 		
 		trackRoomba(port1, 1, 1);
