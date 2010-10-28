@@ -7,7 +7,7 @@ import com.rabbitmq.client.*;
 public class RoyalRoombaManager{
 	
 	//Declare constant variables for RabbitMQ server
-	public static final String HOST = "192.168.43.24";//"192.168.2.100";//"171.18.183.208";//
+	public static final String HOST = "192.168.0.199";//"192.168.43.24";//"192.168.2.100";//"171.18.183.208";//
 	public static final String EXCHANGE = "amq.topic";
 	public static final String ROUTING_KEY_1 = "roomba1";
 	public static final String ROUTING_KEY_2 = "roomba2";
@@ -58,6 +58,11 @@ public class RoyalRoombaManager{
 			roomba1 = new RoombaControl(port1);
 			roomba2 = new RoombaControl(port2);
 			
+			trackRoomba(port1, 1, 1);
+			trackRoomba(port1, -1, -1);
+			trackRoomba(port2, 1, 1);
+			trackRoomba(port2, -1, -1);
+			
 			//Declare exchange to be used and bind a queue
 			//And bind 2 routing keys (one for each roomba
 			//to the queue
@@ -106,6 +111,12 @@ public class RoyalRoombaManager{
 				    	}else if(delivery.getBody().equals("RESETVAR")){
 				    		System.out.println("resetting!");
 				    		initVariables();
+				    	}else if(delivery.getBody().equals("GETCOORDS")){
+				    		
+				    		trackRoomba(port1, 1, 1);
+							trackRoomba(port1, -1, -1);
+							trackRoomba(port2, 1, 1);
+							trackRoomba(port2, -1, -1);
 				    	}
 				    }
 			
@@ -245,7 +256,7 @@ public class RoyalRoombaManager{
 			if(portname.equals(port1)){
 				currentAngle = roomba1Angle + angle;
 			}else{
-				currentAngle = roomba2Angle + angle;
+				currentAngle = roomba2Angle + angle + 180;
 			}
 			
 			if(currentAngle < 0){
