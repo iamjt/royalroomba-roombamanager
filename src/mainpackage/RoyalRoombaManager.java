@@ -7,12 +7,12 @@ import com.rabbitmq.client.*;
 public class RoyalRoombaManager{
 	
 	//Declare constant variables for RabbitMQ server
-	public static final String HOST = "192.168.0.199";//"192.168.43.24";//"192.168.2.100";//"171.18.183.208";//
+	public static final String HOST = "LOCALHOST";//"192.168.0.199";//"192.168.43.24";//"192.168.2.100";//"171.18.183.208";//
 	public static final String EXCHANGE = "amq.topic";
 	public static final String ROUTING_KEY_1 = "roomba1";
 	public static final String ROUTING_KEY_2 = "roomba2";
 	public static final String SERVER_KEY = "server";
-	public static final int PORT = 80;//AMQP.PROTOCOL.PORT; //9000;//
+	public static final int PORT = AMQP.PROTOCOL.PORT; //9000;//80
 	public static final ConnectionFactory FACTORY = new ConnectionFactory();
 	public static final String PUBLISH_KEY_1 = "roomba-out-1";
 	public static final String PUBLISH_KEY_2 = "roomba-out-2";
@@ -32,10 +32,10 @@ public class RoyalRoombaManager{
 	public static final double PI = 3.1415;
 	public static double roomba1X = -200;
 	public static double roomba1Y = 0;
-	public static double roomba1Angle = -90;
+	public static double roomba1Angle = 0;
 	public static double roomba2X = 200;
 	public static double roomba2Y = 0;
-	public static double roomba2Angle = 90;
+	public static double roomba2Angle = 180;
 	
 	public static void main(String args[]){
 		System.out.println("STARTING ROYAL ROOMBA MANAGER");
@@ -138,10 +138,10 @@ public class RoyalRoombaManager{
 		
 		roomba1X = -200;
 		roomba1Y = 0;
-		roomba1Angle = -90;
+		roomba1Angle = 0;
 		roomba2X = 200;
 		roomba2Y = 0;
-		roomba2Angle = 90;
+		roomba2Angle = 180;
 		
 		if((roomba1 != null)&&(roomba2 != null)){
 			roomba1.resetRoomba();
@@ -256,7 +256,7 @@ public class RoyalRoombaManager{
 			if(portname.equals(port1)){
 				currentAngle = roomba1Angle + angle;
 			}else{
-				currentAngle = roomba2Angle + angle + 180;
+				currentAngle = roomba2Angle + angle;
 			}
 			
 			if(currentAngle < 0){
@@ -311,8 +311,8 @@ public class RoyalRoombaManager{
 			double roomba2EnemyY = roomba1Y-roomba2Y;
 			
 			//publish the relative positions to the server
-			publish("roomba-enemy-1", roomba1EnemyX+","+roomba1EnemyY+","+roomba1Angle);
-			publish("roomba-enemy-2", roomba2EnemyX+","+roomba2EnemyY+","+roomba2Angle);
+			publish("roomba-enemy-1", (roomba1EnemyX/1.5)+","+(roomba1EnemyY/2)+","+(roomba1Angle-90));
+			publish("roomba-enemy-2", (roomba2EnemyX/1.5)+","+(roomba2EnemyY/2)+","+(roomba2Angle-90));
 		}
 	}
 	
@@ -324,6 +324,12 @@ public class RoyalRoombaManager{
 	//roomba-collide-X
 	//roomba-out-X
 	public static void publish(String key,String thismessage){
+		
+		//if hit the virtual wall
+		if(thismessage.equals("WALL")){
+			
+			roomba1.roombaAction("STOP");
+		}
 		
 		try {
 			channel.basicPublish(EXCHANGE, key, null, thismessage.getBytes());
