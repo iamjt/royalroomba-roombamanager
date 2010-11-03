@@ -1,4 +1,7 @@
 package mainpackage;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -38,7 +41,35 @@ public class RoyalRoombaManager{
 	public static double roomba2Angle = 180;
 	
 	public static void main(String args[]){
+		
 		System.out.println("STARTING ROYAL ROOMBA MANAGER");
+		
+		try {
+			
+			String sCurrentLine;
+			BufferedReader br = new BufferedReader(new FileReader("RoombaPorts.txt"));
+	 
+	        while ((sCurrentLine = br.readLine()) != null) {
+		       
+		       if(sCurrentLine.contains("Player1")){
+		    	   sCurrentLine = sCurrentLine.replace("Player1:","");
+		    	   port1 = sCurrentLine;
+		       }else{
+		    	   sCurrentLine = sCurrentLine.replace("Player2:","");
+		    	   port2 = sCurrentLine;
+		       }
+	        } 
+	        
+	    } catch (FileNotFoundException e) {
+	 
+	      e.printStackTrace();
+	 
+	    } catch (IOException e) {
+	 
+	      e.printStackTrace();
+	 
+	    }
+		
 		try {
 			System.out.println("CONNECTING TO SERVER....");
 			//Set up RabbitMQ Connection
@@ -130,8 +161,6 @@ public class RoyalRoombaManager{
 		    ex.printStackTrace();
 		    System.exit(1);
 		}
-		
-		//trackRoomba("COM40", 30, 15);
 	}
 	
 	public static void initVariables(){
