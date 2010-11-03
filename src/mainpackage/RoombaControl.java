@@ -243,7 +243,8 @@ public class RoombaControl {
 				
 			}else{
 				
-				velocity = 0;				
+				velocity = 0;	
+				roombacomm.drive(-velocity, radius);
 			}
 		}
 		
