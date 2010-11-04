@@ -199,7 +199,7 @@ public class RoombaControl {
 		//Slows down the roomba
 		if(action.equals("SLOW_DOWN")){
 			
-			if(Math.abs(velocity) <= 10){
+			if(Math.abs(velocity) <= 20){
 				
 				velocity = 0;
 			}
