@@ -1,0 +1,2 @@
+Player1:/dev/cu.FireFly-267D-SPP
+Player2:/dev/cu.FireFly-E5C7-SPP
