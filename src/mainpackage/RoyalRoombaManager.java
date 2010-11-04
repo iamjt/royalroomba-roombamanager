@@ -136,13 +136,13 @@ public class RoyalRoombaManager{
 				    	//Roomba2
 					    roomba2.roombaAction(new String(delivery.getBody()));	
 				    }else if(delivery.getEnvelope().getRoutingKey().equals(SERVER_KEY)){
+				        String messageBody = new String(delivery.getBody());
 				    	//Terminate the consumption loop
-				    	if(delivery.getBody().equals("STOP_CONSUME")){
+				    	if(messageBody.equals("STOP_CONSUME")){
 				    		loopTermination = false;
-				    	}else if(delivery.getBody().equals("RESETVAR")){
-				    		System.out.println("resetting!");
+				    	}else if(messageBody.equals("RESETVAR")){
 				    		initVariables();
-				    	}else if(delivery.getBody().equals("GETCOORDS")){
+				    	}else if(messageBody.equals("GETCOORDS")){
 				    		
 				    		trackRoomba(port1, 1, 1);
 							trackRoomba(port1, -1, -1);
