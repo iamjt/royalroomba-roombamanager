@@ -10,7 +10,7 @@ import com.rabbitmq.client.*;
 public class RoyalRoombaManager{
 	
 	//Declare constant variables for RabbitMQ server
-	public static final String HOST = "192.168.0.192";//"192.168.0.199";//"192.168.43.24";//"192.168.2.100";//"171.18.183.208";//
+	public static final String HOST = "192.168.0.197";//"192.168.0.199";//"192.168.43.24";//"192.168.2.100";//"171.18.183.208";//
 	public static final String EXCHANGE = "amq.topic";
 	public static final String ROUTING_KEY_1 = "roomba1";
 	public static final String ROUTING_KEY_2 = "roomba2";
@@ -135,7 +135,7 @@ public class RoyalRoombaManager{
 				    }else if(delivery.getEnvelope().getRoutingKey().equals(ROUTING_KEY_2)){
 				    	//Roomba2
 					    roomba2.roombaAction(new String(delivery.getBody()));	
-				    }else if(delivery.getEnvelope().getRoutingKey().equals("SERVER_KEY")){
+				    }else if(delivery.getEnvelope().getRoutingKey().equals(SERVER_KEY)){
 				    	//Terminate the consumption loop
 				    	if(delivery.getBody().equals("STOP_CONSUME")){
 				    		loopTermination = false;
